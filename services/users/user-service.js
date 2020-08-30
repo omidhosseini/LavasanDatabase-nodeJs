@@ -1,21 +1,22 @@
-const bcrypt = require("bcrypt");
-const _ = require('lodash');
-const {User, validate} = require("../../models/user-model");
+import bcrypt from "bcrypt";
+import _ from 'lodash';
+import User from '../../models/user-model.js';
 class UserService {
 
     async getUsers(req) {
 
-        const user = (await User.findOne({email: req.email})) || (await User.findOne({phone: req.phone}));
-        if (! user) 
+        const filter = _.pick(req, "firstName", "lastName", "email", "phone");
+
+        console.log(filter);
+
+        const users = await User.find(filter).skip((req.pageNumber - 1) * req.pageSize).limit(req.pageSize * 1).sort({_Id: 1});
+
+        if (! users) 
             return new Promise((resolve, reject) => {
                 reject("User already registered");
             });
         
 
-
-        const users = await User.find().skip((req.pageNumber - 1) * req.pageSize).limit(req.pageSize * 1).sort({_Id: 1});
-
- 
         const mapped = _.map(users, _.partialRight(_.pick, ["firstName", "lastName", "email", "phone"]));
 
         return mapped;
@@ -33,7 +34,7 @@ class UserService {
 
 
         user = new User(_.pick(req, "firstName", "lastName", "email", "phone", "password"));
-        await user.save().then((r) => {
+        const result = await user.save().then((r) => {
             return new Promise((resolve, reject) => {
                 resolve(_.pick(r, "firstName", "lastName", "email", "phone"));
             })
@@ -42,8 +43,10 @@ class UserService {
                 reject("Somthing has wrong...");
             });
         });
+
+        return result;
     }
 }
 
 
-module.exports = UserService;
+export default UserService;

@@ -1,4 +1,5 @@
-const Joi = require('joi');
+import Joi from 'joi';
+
 
 const createUserSchema = Joi.object({
     firstName: Joi.string().min(3).max(50).required(),
@@ -18,7 +19,4 @@ const getUserSchema = Joi.object({
 });
 
 
-module.exports = {
-    createUserSchema,
-    getUserSchema
-};
+export {createUserSchema , getUserSchema}

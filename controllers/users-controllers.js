@@ -1,10 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const UserService = require('../services/users/user-service');
-const {createUserSchema, getUserSchema} = require('../dto/users/create-user-dto');
+import {createUserSchema, getUserSchema} from '../dto/users/create-user-dto.js';
+import UserService from '../services/users/user-service.js';
+
 const service = new UserService();
 
-router.post('/', async (req, res) => {
+export const createUser = async (req, res) => {
 
     const {error} = createUserSchema.validate(req.body);
     if (error) 
@@ -17,10 +16,9 @@ router.post('/', async (req, res) => {
     }).catch(async (err) => {
         res.status(400).send(await err);
     });
-});
+}
 
-
-router.get('/', async (req, res) => {
+export const getUsers = async (req, res) => {
 
     const {error} = getUserSchema.validate(req.query);
     if (error) 
@@ -34,6 +32,4 @@ router.get('/', async (req, res) => {
         res.status(400).send(await err);
     });
 
-});
-
-module.exports = router;
+}
