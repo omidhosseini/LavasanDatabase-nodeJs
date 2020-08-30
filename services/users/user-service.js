@@ -1,16 +1,28 @@
 const bcrypt = require("bcrypt");
 const _ = require('lodash');
 const {User, validate} = require("../../models/user-model");
-
 class UserService {
 
-    async addUser(req) {
+    async getUsers(req) {
 
-        const {error} = validate(req);
-        if (error) 
+        const user = (await User.findOne({email: req.email})) || (await User.findOne({phone: req.phone}));
+        if (! user) 
             return new Promise((resolve, reject) => {
-                reject(error.details[0].message);
+                reject("User already registered");
             });
+        
+
+
+        const users = await User.find().skip((req.pageNumber - 1) * req.pageSize).limit(req.pageSize * 1).sort({_Id: 1});
+
+ 
+        const mapped = _.map(users, _.partialRight(_.pick, ["firstName", "lastName", "email", "phone"]));
+
+        return mapped;
+
+    }
+
+    async addUser(req) {
 
         let user = (await User.findOne({email: req.email})) || (await User.findOne({phone: req.phone}));
         if (user) 
@@ -18,8 +30,10 @@ class UserService {
                 reject("User already registered");
             });
         
+
+
         user = new User(_.pick(req, "firstName", "lastName", "email", "phone", "password"));
-        const res = await user.save().then((r) => {
+        await user.save().then((r) => {
             return new Promise((resolve, reject) => {
                 resolve(_.pick(r, "firstName", "lastName", "email", "phone"));
             })
@@ -28,8 +42,6 @@ class UserService {
                 reject("Somthing has wrong...");
             });
         });
-
-        return res;
     }
 }
 

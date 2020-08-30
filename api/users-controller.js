@@ -1,25 +1,39 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
-const UserService = require('../services/users/user-service')
+const UserService = require('../services/users/user-service');
+const {createUserSchema, getUserSchema} = require('../dto/users/create-user-dto');
+const service = new UserService();
 
 router.post('/', async (req, res) => {
 
-    console.log('POST /api/users');
+    const {error} = createUserSchema.validate(req.body);
+    if (error) 
+        return res.status(400).send(error.details[0].message);
+    
 
-    let service = new UserService();
 
-    await service.addUser(req.body).then(async (result) => {
-        console.log("asdasd",await result);
-
+    service.addUser(req.body).then(async (result) => {
         res.send(await result);
     }).catch(async (err) => {
-        console.error(await err);
         res.status(400).send(await err);
-    })
+    });
+});
 
 
-    //
+router.get('/', async (req, res) => {
+
+    const {error} = getUserSchema.validate(req.query);
+    if (error) 
+        return res.status(400).send(error.details[0].message);
+    
+
+
+    service.getUsers(req.query).then(async (result) => {
+        res.send(await result);
+    }).catch(async (err) => {
+        res.status(400).send(await err);
+    });
+
 });
 
 module.exports = router;
