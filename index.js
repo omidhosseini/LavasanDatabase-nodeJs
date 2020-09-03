@@ -4,6 +4,7 @@ import Joi from 'joi';
 import objectId from 'joi-objectid';
 import mongoose from 'mongoose';
 import usersRoutes from './routes/users-route.js';
+import categoryRoutes from './routes/category-route.js';
 
 
 const app = express();
@@ -16,6 +17,7 @@ mongoose.connect('mongodb://localhost/lavasandatabase', {useNewUrlParser : true,
 
 app.use(express.json());
 app.use('/api/users',usersRoutes);
+app.use('/api/categories', categoryRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server start at localhost:${PORT}`)

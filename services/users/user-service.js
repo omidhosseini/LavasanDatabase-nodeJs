@@ -7,8 +7,6 @@ class UserService {
 
         const filter = _.pick(req, "firstName", "lastName", "email", "phone");
 
-        console.log(filter);
-
         const users = await User.find(filter).skip((req.pageNumber - 1) * req.pageSize).limit(req.pageSize * 1).sort({_Id: 1});
 
         if (! users) 
@@ -30,7 +28,6 @@ class UserService {
             return new Promise((resolve, reject) => {
                 reject("User already registered");
             });
-        
 
 
         user = new User(_.pick(req, "firstName", "lastName", "email", "phone", "password"));

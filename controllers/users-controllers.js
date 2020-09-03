@@ -1,4 +1,4 @@
-import {createUserSchema, getUserSchema} from '../dto/users/create-user-dto.js';
+import {createUserSchema, getUserSchema} from '../dto/users/user-dto.js';
 import UserService from '../services/users/user-service.js';
 
 const service = new UserService();
